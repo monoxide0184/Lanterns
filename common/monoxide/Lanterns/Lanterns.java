@@ -1,6 +1,9 @@
 package monoxide.Lanterns;
 
+import java.io.File;
+
 import net.minecraft.src.Item;
+import net.minecraftforge.common.Configuration;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.Mod.Instance;
@@ -33,8 +36,10 @@ public class Lanterns {
 
 	@Init
 	public void Initialise(FMLInitializationEvent event) {
-		filament = new FilamentItem(500);
-		LanguageRegistry.addName(filament, "Filament");	
+		Configuration config = new Configuration(new File("config/Lanterns.cfg"));
+		filament = new FilamentItem(config.getOrCreateItemIdProperty("filament", 400).getInt());
+		
+		config.save();
 	}
 	
 	@PostInit
