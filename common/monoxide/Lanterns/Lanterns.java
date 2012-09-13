@@ -31,11 +31,6 @@ public class Lanterns {
 	public static CommonProxy proxy;
 	
 	public static FilamentItem filament;
-	
-	@PreInit
-	public void preInit(FMLPreInitializationEvent event) {
-		// Stub Method
-	}
 
 	@Init
 	public void Initialise(FMLInitializationEvent event) {
@@ -65,10 +60,5 @@ public class Lanterns {
 				'C', new ItemStack(Item.clay),
 				'F', new ItemStack(filament, 1, FilamentItem.PLAIN)
 				);
-	}
-	
-	@PostInit
-	public void postInit(FMLPostInitializationEvent event) {
-		// Stub Method
 	}
 }
