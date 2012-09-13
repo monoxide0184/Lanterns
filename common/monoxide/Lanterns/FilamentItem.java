@@ -10,9 +10,9 @@ import net.minecraft.src.ItemStack;
 
 public class FilamentItem extends Item {
 	
-	public static final int DAMAGE_PLAIN = 0;
-	public static final int DAMAGE_FORGED = 1;
-	public static final int DAMAGE_WATERPROOF = 2;
+	public static final int PLAIN = 0;
+	public static final int FORGED = 1;
+	public static final int WATERPROOF = 2;
 	
 	public FilamentItem(int i) {
 		super(i);
@@ -33,11 +33,11 @@ public class FilamentItem extends Item {
 	@Override
 	public String getItemDisplayName(ItemStack itemStack) {
 		switch(itemStack.getItemDamage()) {
-		case DAMAGE_PLAIN:
+		case PLAIN:
 			return "Filament";
-		case DAMAGE_FORGED:
+		case FORGED:
 			return "Fired Filament";
-		case DAMAGE_WATERPROOF:
+		case WATERPROOF:
 			return "Waterproof Filament";
 		}
 		return super.getItemDisplayName(itemStack);

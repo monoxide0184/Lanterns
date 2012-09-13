@@ -2,7 +2,9 @@ package monoxide.Lanterns;
 
 import java.io.File;
 
+import net.minecraft.src.FurnaceRecipes;
 import net.minecraft.src.Item;
+import net.minecraft.src.ItemStack;
 import net.minecraftforge.common.Configuration;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
@@ -14,6 +16,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
 @Mod(modid = "monoxide_Lanterns", name = "Lanterns", version = "1.0.0.1")
@@ -27,7 +30,7 @@ public class Lanterns {
 	@SidedProxy(clientSide="monoxide.Lanterns.client.ClientProxy", serverSide="monoxide.Lanterns.CommonProxy")
 	public static CommonProxy proxy;
 	
-	public static Item filament;
+	public static FilamentItem filament;
 	
 	@PreInit
 	public void preInit(FMLPreInitializationEvent event) {
@@ -36,10 +39,32 @@ public class Lanterns {
 
 	@Init
 	public void Initialise(FMLInitializationEvent event) {
+		proxy.registerRenderers();
+		
 		Configuration config = new Configuration(new File("config/Lanterns.cfg"));
 		filament = new FilamentItem(config.getOrCreateItemIdProperty("filament", 400).getInt());
 		
 		config.save();
+		
+		// Create regular filaments
+		GameRegistry.addRecipe(
+				new ItemStack(filament, 1, FilamentItem.PLAIN),
+				"RRR",
+				"CCC",
+				'R', new ItemStack(Item.redstone),
+				'C', new ItemStack(Item.coal, 1, 0)
+				);
+		
+		// Bypass FML as it doesn't support metadata smelting recipes
+		FurnaceRecipes.smelting().addSmelting(filament.shiftedIndex, FilamentItem.PLAIN, new ItemStack(filament, 1, FilamentItem.FORGED));
+		
+		GameRegistry.addRecipe(
+				new ItemStack(filament, 1, FilamentItem.WATERPROOF),
+				"CCC",
+				" F ",
+				'C', new ItemStack(Item.clay),
+				'F', new ItemStack(filament, 1, FilamentItem.PLAIN)
+				);
 	}
 	
 	@PostInit
