@@ -2,6 +2,8 @@ package monoxide.Lanterns;
 
 import java.io.File;
 
+import net.minecraft.src.Block;
+import net.minecraft.src.BlockTorch;
 import net.minecraft.src.FurnaceRecipes;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
@@ -23,7 +25,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 public class Lanterns {
 	// The instance of your mod that Forge uses.
-	@Instance
+	@Instance("monoxide_Lanterns")
 	public static Lanterns instance;
 	
 	// Says where the client and server 'proxy' code is loaded.
@@ -31,6 +33,7 @@ public class Lanterns {
 	public static CommonProxy proxy;
 	
 	public static FilamentItem filament;
+	public static Block zeroTorch;
 
 	@Init
 	public void Initialise(FMLInitializationEvent event) {
@@ -38,6 +41,10 @@ public class Lanterns {
 		
 		Configuration config = new Configuration(new File("config/Lanterns.cfg"));
 		filament = new FilamentItem(config.getOrCreateItemIdProperty("filament", 400).getInt());
+		zeroTorch = (new BlockZeroTorch(config.getOrCreateBlockIdProperty("zeroTorch", 500).getInt(), 80))
+				.setHardness(0.0F).setLightValue(0).setStepSound(Block.soundWoodFootstep).setBlockName("torchZero");
+		GameRegistry.registerBlock(zeroTorch);
+		LanguageRegistry.addName(zeroTorch, "Zero Torch");
 		
 		config.save();
 		
