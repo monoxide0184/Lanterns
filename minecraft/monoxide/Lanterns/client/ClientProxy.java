@@ -1,7 +1,11 @@
 package monoxide.Lanterns.client;
 
+import java.util.List;
+
 import net.minecraft.client.Minecraft;
+import net.minecraft.src.AxisAlignedBB;
 import net.minecraft.src.Block;
+import net.minecraft.src.TileEntityChest;
 import net.minecraft.src.World;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.ILightingHandler;
@@ -37,7 +41,7 @@ public class ClientProxy extends CommonProxy implements ILightingHandler {
 		World world = Minecraft.getMinecraft().theWorld;
 		
 		if (world.getBlockId(x, y, z) == Lanterns.zeroTorch.blockID) {
-			return 1;
+			List entities = world.getEntitiesWithinAABB(TileEntityChest.class, AxisAlignedBB.getBoundingBox(x-16, y-16, z-16, x+16, y+16, z+16));
 		}
 		
 		return -1;
@@ -48,7 +52,6 @@ public class ClientProxy extends CommonProxy implements ILightingHandler {
 		int yDiff = y2 - y1;
 		int zDiff = z2 - z1;
 		
-		return 0;
-		//return (int) Math.round(Math.sqrt(xDiff * xDiff + yDiff * yDiff + zDiff * zDiff));
+		return (int) Math.round(Math.sqrt(xDiff * xDiff + yDiff * yDiff + zDiff * zDiff));
 	}
 }

@@ -45,6 +45,7 @@ public class Lanterns {
 				.setHardness(0.0F).setLightValue(0).setStepSound(Block.soundWoodFootstep).setBlockName("torchZero");
 		GameRegistry.registerBlock(zeroTorch);
 		LanguageRegistry.addName(zeroTorch, "Zero Torch");
+		GameRegistry.registerTileEntity(TileEntityZeroTorch.class, "torchZero");
 		
 		config.save();
 		
