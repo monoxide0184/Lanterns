@@ -1,10 +1,13 @@
 package monoxide.Lanterns.client;
 
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.AxisAlignedBB;
 import net.minecraft.src.Block;
+import net.minecraft.src.TileEntity;
 import net.minecraft.src.TileEntityChest;
 import net.minecraft.src.World;
 import net.minecraftforge.client.ForgeHooksClient;
@@ -14,8 +17,12 @@ import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
 import monoxide.Lanterns.CommonProxy;
 import monoxide.Lanterns.Lanterns;
+import monoxide.Lanterns.TileEntityZeroTorch;
 
 public class ClientProxy extends CommonProxy implements ILightingHandler {
+	private final int ZERO_TORCH_MAX_LIGHT = 8;
+	
+	
 	@Override
 	public void registerRenderers() {
 		MinecraftForgeClient.preloadTexture(CommonProxy.ITEMS_PNG);
@@ -38,13 +45,29 @@ public class ClientProxy extends CommonProxy implements ILightingHandler {
 	}
 	
 	public int getLightLevel(int x, int y, int z, int currentLight) {
-		World world = Minecraft.getMinecraft().theWorld;
-		
-		if (world.getBlockId(x, y, z) == Lanterns.zeroTorch.blockID) {
-			List entities = world.getEntitiesWithinAABB(TileEntityChest.class, AxisAlignedBB.getBoundingBox(x-16, y-16, z-16, x+16, y+16, z+16));
+		int nearestZeroTorch = 1000;
+
+		// NB: This should be synchronized properly and the TileEntity side is, but since doing 
+		// so in the rendering layer literally halves our FPS so we make do with catching sync 
+		// errors and retrying. The exception is far less painful.
+		try {
+			for (TileEntity entity : TileEntityZeroTorch.allTorches) {
+				int distance = distance(x, y, z, entity.xCoord, entity.yCoord, entity.zCoord);
+				if (distance < nearestZeroTorch) {
+					nearestZeroTorch = distance;
+				}
+			}
+		} catch (NullPointerException ex) {
+			return getLightLevel(x, y, nearestZeroTorch, currentLight);
+		} catch (ConcurrentModificationException ex) {
+			return getLightLevel(x, y, nearestZeroTorch, currentLight);
 		}
 		
-		return -1;
+		if (nearestZeroTorch <= ZERO_TORCH_MAX_LIGHT) {
+			return ZERO_TORCH_MAX_LIGHT;
+		}
+		
+		return Math.min(currentLight, nearestZeroTorch);
 	}
 	
 	private int distance(int x1, int y1, int z1, int x2, int y2, int z2) {

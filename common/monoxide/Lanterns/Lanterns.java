@@ -42,7 +42,7 @@ public class Lanterns {
 		Configuration config = new Configuration(new File("config/Lanterns.cfg"));
 		filament = new FilamentItem(config.getOrCreateItemIdProperty("filament", 400).getInt());
 		zeroTorch = (new BlockZeroTorch(config.getOrCreateBlockIdProperty("zeroTorch", 500).getInt(), 80))
-				.setHardness(0.0F).setLightValue(0).setStepSound(Block.soundWoodFootstep).setBlockName("torchZero");
+				.setHardness(0.0F).setLightValue(1.0f).setStepSound(Block.soundWoodFootstep).setBlockName("torchZero");
 		GameRegistry.registerBlock(zeroTorch);
 		LanguageRegistry.addName(zeroTorch, "Zero Torch");
 		GameRegistry.registerTileEntity(TileEntityZeroTorch.class, "torchZero");

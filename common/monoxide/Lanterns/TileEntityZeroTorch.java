@@ -19,16 +19,22 @@ public class TileEntityZeroTorch extends TileEntity {
 	
 	@Override
 	public void onChunkUnload() {
-		allTorches.remove(this);
+		synchronized(allTorches) {
+			allTorches.remove(this);
+		}
 	}
 
 	@Override
 	public void validate() {
-		allTorches.add(this);
+		synchronized(allTorches) {
+			allTorches.add(this);
+		}
 	}
 	
 	@Override
 	public void invalidate() {
-		allTorches.remove(this);
+		synchronized(allTorches) {
+			allTorches.remove(this);
+		}
 	}
 }
