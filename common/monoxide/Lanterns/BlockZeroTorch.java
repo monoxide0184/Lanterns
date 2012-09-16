@@ -13,6 +13,7 @@ public class BlockZeroTorch extends BlockTorch {
 	protected BlockZeroTorch(int par1, int par2) {
 		super(par1, par2);
 		setRequiresSelfNotify();
+		isBlockContainer = true;
 	}
 	
     public TileEntity createNewTileEntity(World world) {
