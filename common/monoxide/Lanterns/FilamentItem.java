@@ -17,7 +17,7 @@ public class FilamentItem extends Item {
 	public FilamentItem(int i) {
 		super(i);
 		setMaxStackSize(16);
-		this.setTabToDisplayOn(CreativeTabs.tabMaterials);
+		this.setCreativeTab(CreativeTabs.tabMaterials);
 	}
 	
 	@Override
