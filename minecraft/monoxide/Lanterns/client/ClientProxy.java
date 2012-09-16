@@ -36,38 +36,34 @@ public class ClientProxy extends CommonProxy implements ILightingHandler {
 
 	@Override
 	public int getSkyLightLevel(int x, int y, int z, int currentLight, LightingType type) {
-		return getLightLevel(x, y, z, currentLight);
+		return -1;
 	}
 
 	@Override
 	public int getBlockLightLevel(int x, int y, int z, int currentLight, LightingType type) {
-		return getLightLevel(x, y, z, currentLight);
-	}
-	
-	public int getLightLevel(int x, int y, int z, int currentLight) {
-		int nearestZeroTorch = 1000;
+		int nearestDistance = 1000;
 
 		// NB: This should be synchronized properly and the TileEntity side is, but since doing 
-		// so in the rendering layer literally halves our FPS so we make do with catching sync 
+		// so in the rendering layer literally halves our FPS we make do with catching sync 
 		// errors and retrying. The exception is far less painful.
 		try {
 			for (TileEntity entity : TileEntityZeroTorch.allTorches) {
 				int distance = distance(x, y, z, entity.xCoord, entity.yCoord, entity.zCoord);
-				if (distance < nearestZeroTorch) {
-					nearestZeroTorch = distance;
+				if (distance < nearestDistance) {
+					nearestDistance = distance;
 				}
 			}
 		} catch (NullPointerException ex) {
-			return getLightLevel(x, y, nearestZeroTorch, currentLight);
+			return getBlockLightLevel(x, y, nearestDistance, currentLight, type);
 		} catch (ConcurrentModificationException ex) {
-			return getLightLevel(x, y, nearestZeroTorch, currentLight);
+			return getBlockLightLevel(x, y, nearestDistance, currentLight, type);
 		}
 		
-		if (nearestZeroTorch <= ZERO_TORCH_MAX_LIGHT) {
+		if (nearestDistance <= ZERO_TORCH_MAX_LIGHT) {
 			return ZERO_TORCH_MAX_LIGHT;
 		}
 		
-		return Math.min(currentLight, nearestZeroTorch);
+		return Math.min(currentLight, nearestDistance);
 	}
 	
 	private int distance(int x1, int y1, int z1, int x2, int y2, int z2) {
