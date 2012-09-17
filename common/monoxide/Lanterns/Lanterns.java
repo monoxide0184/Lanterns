@@ -34,7 +34,7 @@ public class Lanterns {
 	
 	public static FilamentItem filament;
 	public static Block zeroTorch;
-
+	
 	@Init
 	public void Initialise(FMLInitializationEvent event) {
 		proxy.registerRenderers();
