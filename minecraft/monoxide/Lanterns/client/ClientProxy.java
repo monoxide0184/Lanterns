@@ -7,8 +7,10 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.AxisAlignedBB;
 import net.minecraft.src.Block;
+import net.minecraft.src.MovingObjectPosition;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.TileEntityChest;
+import net.minecraft.src.Vec3;
 import net.minecraft.src.World;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.ILightingHandler;
@@ -41,6 +43,7 @@ public class ClientProxy extends CommonProxy implements ILightingHandler {
 
 	@Override
 	public int getBlockLightLevel(int x, int y, int z, int currentLight, LightingType type) {
+		World worldObj = Minecraft.getMinecraft().theWorld;
 		int nearestDistance = 1000;
 
 		// NB: This should be synchronized properly and the TileEntity side is, but since doing 
@@ -49,7 +52,14 @@ public class ClientProxy extends CommonProxy implements ILightingHandler {
 		try {
 			for (TileEntity entity : TileEntityZeroTorch.allTorches) {
 				int distance = distance(x, y, z, entity.xCoord, entity.yCoord, entity.zCoord);
-				if (distance < nearestDistance) {
+				
+				if (distance > 16) { continue; }
+				
+				Vec3 start = Vec3.getVec3Pool().getVecFromPool(x, y, z);
+				Vec3 end = Vec3.getVec3Pool().getVecFromPool(entity.xCoord, entity.yCoord, entity.zCoord);
+				MovingObjectPosition intersection = worldObj.rayTraceBlocks(start, end);
+				
+				if (intersection == null && distance < nearestDistance) {
 					nearestDistance = distance;
 				}
 			}
