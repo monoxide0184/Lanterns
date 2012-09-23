@@ -1,6 +1,7 @@
 package monoxide.Lanterns;
 
 import java.io.File;
+import java.util.logging.Level;
 
 import net.minecraft.src.Block;
 import net.minecraft.src.BlockTorch;
@@ -8,6 +9,7 @@ import net.minecraft.src.FurnaceRecipes;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraftforge.common.Configuration;
+import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.Mod.Instance;
@@ -21,33 +23,47 @@ import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "monoxide_Lanterns", name = "Lanterns", version = "1.0.0.1")
+@Mod(modid = "monoxide_Lanterns", name = "Lanterns", version = Lanterns.VERSION)
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 public class Lanterns {
 	// The instance of your mod that Forge uses.
 	@Instance("monoxide_Lanterns")
 	public static Lanterns instance;
+	public static final String VERSION = "1.0.0.1";
 	
 	// Says where the client and server 'proxy' code is loaded.
 	@SidedProxy(clientSide="monoxide.Lanterns.client.ClientProxy", serverSide="monoxide.Lanterns.CommonProxy")
 	public static CommonProxy proxy;
 	
 	public static FilamentItem filament;
+	protected static int filamentId;
 	public static Block zeroTorch;
+	protected static int zeroTorchId;
+	
+	@PreInit
+	public void PreInit(FMLPreInitializationEvent event) {
+		Configuration config = new Configuration(event.getSuggestedConfigurationFile());
+		
+		try {
+			config.load();
+			filamentId = config.getOrCreateItemIdProperty("filament", 400).getInt();
+			zeroTorchId = config.getOrCreateBlockIdProperty("zeroTorch", 500).getInt();
+		} catch (Exception e) {
+			FMLLog.log(Level.SEVERE, e, "Lanterns couldn't load it's configuration properly.");
+		} finally {
+			config.save();
+		}
+	}
 	
 	@Init
 	public void Initialise(FMLInitializationEvent event) {
 		proxy.registerRenderers();
-		
-		Configuration config = new Configuration(new File("config/Lanterns.cfg"));
-		filament = new FilamentItem(config.getOrCreateItemIdProperty("filament", 400).getInt());
-		zeroTorch = (new BlockZeroTorch(config.getOrCreateBlockIdProperty("zeroTorch", 500).getInt(), 80))
+		filament = new FilamentItem(filamentId);
+		zeroTorch = (new BlockZeroTorch(zeroTorchId, 80))
 				.setHardness(0.0F).setLightValue(1.0f).setStepSound(Block.soundWoodFootstep).setBlockName("torchZero");
 		GameRegistry.registerBlock(zeroTorch);
 		LanguageRegistry.addName(zeroTorch, "Zero Torch");
 		GameRegistry.registerTileEntity(TileEntityZeroTorch.class, "torchZero");
-		
-		config.save();
 		
 		// Create regular filaments
 		GameRegistry.addRecipe(
