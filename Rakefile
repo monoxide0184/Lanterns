@@ -11,23 +11,66 @@ def mod_dir
 end
 mod_dir
 
+def platform
+  @platform ||=
+    case RbConfig::CONFIG['host_os']
+    when /mingw|mswin/
+      :windows
+    when /linux/
+      :linux
+    else
+      :unknown
+    end
+end
+
 def python
-  `which python2 2> /dev/null`.chomp || `which python 2> /dev/null`.chomp
+  case platform
+  when :linux
+	`which python2 2> /dev/null`.chomp || `which python 2> /dev/null`.chomp
+  when :windows
+    "#{mcp_dir}\\runtime\\bin\\python\\python_mcp"
+  end
 end
 
 def batch(script, *params)
-  script = "./#{script}.sh"
+  case platform
+  when :linux
+    script = "./#{script}.sh"
+  when :windows
+    if File.exist? "#{script}.bat"
+      script = "#{script}.bat"
+	else
+	  script = "#{script}.cmd"
+	end
+  end
   if !File.executable?(script)
     File.chmod(0755, script)
   end
   sh script, *params
 end
 
+def symlink_cross_platform(old, new)
+  case platform
+  when :linux
+    File.symlink(old, new)
+  when :windows
+	old.gsub!('/', '\\')
+	new.gsub!('/', '\\')
+	if File.directory? old
+	  opts = ["/J", new, old]
+	else
+	  opts = [new, old]
+	end
+    sh "cmd.exe", "/c", "mklink", *opts
+  end
+end
+
 task :setup do
   Dir.chdir "#{mcp_dir}/forge" do batch "install" end
+  sh "git", "checkout", "src"
   Dir.chdir "#{mod_dir}/src" do
     Dir["*/*"].each do |dir|
-      File.symlink(File.realpath(dir), "#{mcp_dir}/src/#{dir}")
+      symlink_cross_platform(File.realpath(dir), "#{mcp_dir}/src/#{dir}")
     end
   end
 end
