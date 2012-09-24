@@ -15,7 +15,7 @@ def mcmod
   @mcmod ||= JSON.parser.new(IO.read("#{mod_dir}/src/common/mcmod.info")).parse();
 end
 
-def mcmod=(value)
+def save_mcmod(value)
   IO.write("#{mod_dir}/src/common/mcmod.info", value.to_json)
 end
 
@@ -92,7 +92,7 @@ task :deploy do
   if ENV['BUILD_NUMBER']
 	info = mcmod
 	mcmod[0]['version'].gsub!(/\d+$/, ENV['BUILD_NUMBER'])
-	mcmod = info
+	save_mcmod info
   end
 
   Dir.chdir mcp_dir do
