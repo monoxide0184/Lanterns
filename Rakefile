@@ -2,7 +2,7 @@
 require 'fileutils'
 
 def mcp_dir
-  @mcp_dir ||= File.realpath ".."
+  @mcp_dir ||= (ENV["MCP_DIR"] || File.realpath(".."))
 end
 mcp_dir
 
