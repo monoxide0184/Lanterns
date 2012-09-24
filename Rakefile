@@ -85,6 +85,11 @@ task :deploy do
   Dir.chdir "#{mcp_dir}/reobf/minecraft" do
     sh "zip", "-rq", zip_file, *Dir["*"]
   end
+
+  if ENV['BUILD_NUMBER']
+	sh "sed", "-rie", "s/\"version\": \"([0-9.]*\\.)([0-9]*)\"/\"version\": \"\\1#{ENV['BUILD_NUMBER']}\"/", "src/common/mcmod.info"
+  end
+
   Dir["#{mod_dir}/src/*"].each do |dir|
     Dir.chdir dir do
       files = Dir["**/*"].reject {|f| File.directory? f }.reject {|f| f[-5, 5] == ".java" }
@@ -94,4 +99,3 @@ task :deploy do
     end
   end
 end
-
