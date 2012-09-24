@@ -40,7 +40,7 @@ task :deploy do
   end
   zip_file = "#{mod_dir}/Lanterns-universal-1.0.0.jar"
   Dir.chdir "#{mcp_dir}/reobf/minecraft" do
-    sh "zip", "-q", zip_file, *Dir["*"]
+    sh "zip", "-rq", zip_file, *Dir["*"]
   end
   Dir["#{mod_dir}/src/*"].each do |dir|
     Dir.chdir dir do
