@@ -29,7 +29,7 @@ public class Lanterns {
 	// The instance of your mod that Forge uses.
 	@Instance("monoxide_Lanterns")
 	public static Lanterns instance;
-	public static final String VERSION = "1.0.0.1";
+	public static final String VERSION = "1.0.0";
 	
 	// Says where the client and server 'proxy' code is loaded.
 	@SidedProxy(clientSide="monoxide.Lanterns.client.ClientProxy", serverSide="monoxide.Lanterns.CommonProxy")

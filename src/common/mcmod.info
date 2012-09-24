@@ -1,0 +1,21 @@
+[
+{
+  "modid": "monoxide_Lanterns",
+  "name": "Lanterns",
+  "description": "",
+  "version": "1.0.0",
+  "mcversion": "1.3.2",
+  "url": "https://github.com/monoxide0184/Lanterns",
+  "updateUrl": "",
+  "authors": [
+    "monoxide"
+  ],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [
+  ],
+  "parent":"",
+  "dependencies": [
+  ]
+}
+]
