@@ -1,5 +1,5 @@
-
 require 'fileutils'
+require 'json'
 
 def mcp_dir
   @mcp_dir ||= (ENV["MCP_DIR"] || File.realpath(".."))
@@ -10,6 +10,18 @@ def mod_dir
   @mod_dir ||= File.realpath "."
 end
 mod_dir
+
+def mcmod
+  @mcmod ||= JSON.parser.new(IO.read("#{mod_dir}/src/common/mcmod.info")).parse();
+end
+
+def mcmod=(value)
+  IO.write("#{mod_dir}/src/common/mcmod.info", value.to_json)
+end
+
+def version
+  mcmod[0]['version']
+end
 
 def platform
   @platform ||=
@@ -77,17 +89,19 @@ end
 
 desc "Package a new deployment"
 task :deploy do
+  if ENV['BUILD_NUMBER']
+	info = mcmod
+	mcmod[0]['version'].gsub!(/\d+$/, ENV['BUILD_NUMBER'])
+	mcmod = info
+  end
+
   Dir.chdir mcp_dir do
     batch "recompile"
     batch "reobfuscate"
   end
-  zip_file = "#{mod_dir}/Lanterns-universal-1.0.0.jar"
+  zip_file = "#{mod_dir}/Lanterns-universal-#{version}.jar"
   Dir.chdir "#{mcp_dir}/reobf/minecraft" do
     sh "zip", "-rq", zip_file, *Dir["*"]
-  end
-
-  if ENV['BUILD_NUMBER']
-	sh "sed", "-rie", "s/\"version\": \"([0-9.]*\\.)([0-9]*)\"/\"version\": \"\\1#{ENV['BUILD_NUMBER']}\"/", "src/common/mcmod.info"
   end
 
   Dir["#{mod_dir}/src/*"].each do |dir|
