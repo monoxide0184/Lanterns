@@ -45,6 +45,10 @@ def python
 end
 
 def batch(script, *params)
+  sh batch_command(script), *params
+end
+
+def batch_command(script)
   case platform
   when :linux
     script = "./#{script}.sh"
@@ -58,7 +62,7 @@ def batch(script, *params)
   if !File.executable?(script)
     File.chmod(0755, script)
   end
-  sh script, *params
+  return script
 end
 
 def symlink_cross_platform(old, new)
@@ -90,13 +94,17 @@ end
 desc "Package a new deployment"
 task :deploy do
   if ENV['BUILD_NUMBER']
-	info = mcmod
-	mcmod[0]['version'].gsub!(/\d+$/, ENV['BUILD_NUMBER'])
-	save_mcmod info
+    info = mcmod
+    mcmod[0]['version'].gsub!(/\d+$/, ENV['BUILD_NUMBER'])
+    save_mcmod info
   end
 
   Dir.chdir mcp_dir do
-    batch "recompile"
+    output = `#{batch_command("recompile")} 2>&1`
+    puts output
+    if output.match(/\d+ errors?/)
+      return 1
+    end
     batch "reobfuscate"
   end
   zip_file = "#{mod_dir}/Lanterns-universal-#{version}.jar"
