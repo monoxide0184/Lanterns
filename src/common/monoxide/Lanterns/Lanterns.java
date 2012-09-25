@@ -51,8 +51,8 @@ public class Lanterns {
 		
 		try {
 			config.load();
-			filamentId = config.getOrCreateItemIdProperty("filament", 400).getInt();
-			zeroTorchId = config.getOrCreateBlockIdProperty("zeroTorch", 500).getInt();
+			filamentId = config.getItem("filament", 400).getInt();
+			zeroTorchId = config.getBlock("zeroTorch", 500).getInt();
 		} catch (Exception e) {
 			FMLLog.log(Level.SEVERE, e, "Lanterns couldn't load it's configuration properly.");
 		} finally {
