@@ -23,13 +23,13 @@ import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "monoxide_Lanterns")
+@Mod(modid = "monoxide_Lanterns", version = Lanterns.version)
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 public class Lanterns {
 	// The instance of your mod that Forge uses.
 	@Instance("monoxide_Lanterns")
 	public static Lanterns instance;
-	private static String version;
+	public static final String version = "1.0.0";
 	
 	// Says where the client and server 'proxy' code is loaded.
 	@SidedProxy(clientSide="monoxide.Lanterns.client.ClientProxy", serverSide="monoxide.Lanterns.CommonProxy")
@@ -40,13 +40,8 @@ public class Lanterns {
 	public static Block zeroTorch;
 	protected static int zeroTorchId;
 	
-	public static String getVersion() {
-		return version;
-	}
-	
 	@PreInit
 	public void PreInit(FMLPreInitializationEvent event) {
-		version = event.getModMetadata().version;
 		Configuration config = new Configuration(event.getSuggestedConfigurationFile());
 		
 		try {
