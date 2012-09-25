@@ -108,6 +108,7 @@ task :deploy do
     batch "reobfuscate"
   end
   zip_file = "#{mod_dir}/Lanterns-universal-#{version}.jar"
+  IO.write("#{mcp_dir}/reobf/minecraft/version.properties", "#{mcmod[0]["modid"]}.version=#{version}")
   Dir.chdir "#{mcp_dir}/reobf/minecraft" do
     sh "zip", "-rq", zip_file, *Dir["*"]
   end
